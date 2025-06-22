@@ -1,0 +1,117 @@
+import React, { useContext, useEffect, useMemo, lazy, Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
+import { AppContext } from '../context/AppContext';
+import { getRecommendation } from '../utils/federatedLearning';
+import { toast } from 'react-toastify';
+
+const DailyQuiz = lazy(() => import('./DailyQuiz'));
+const Forum = lazy(() => import('./Forum'));
+const AnalyticsChart = lazy(() => import('./AnalyticsChart'));
+
+const Dashboard = () => {
+  const { t } = useTranslation();
+  const { state, dispatch } = useContext(AppContext);
+
+  useEffect(() => {
+    if (state.user && state.cart.length > 0 && state.flConsent) {
+      getRecommendation(state.cart.map((item) => item.id), state.products)
+        .then((rec) => {
+          toast.info(`${t('recommended')}: ${rec.name}`);
+        })
+        .catch(() => toast.warn(t('recommendationError')));
+    }
+  }, [state.cart, state.user, state.flConsent, t]);
+
+  const getPrice = useMemo(
+    () => (product) => {
+      let price = product.price;
+      if (state.tier === 'Gold') price *= 0.9;
+      else if (state.tier === 'Silver') price *= 0.95;
+      if (product.stock < 10) price *= 1.05;
+      return price.toFixed(2);
+    },
+    [state.tier]
+  );
+
+  return (
+    <div className="pt-20">
+      <section id="home" className="bg-babyBlue py-20 text-center">
+        <div className="container mx-auto">
+          <h2 className="text-4xl font-bold text-blue-800 mb-4 holographic">{t('welcome')}</h2>
+          <p className="text-lg text-gray-600 mb-6">{t('discover')}</p>
+          <a href="#products" className="baby-button" aria-label={t('shopNow')}>
+            {t('shopNow')}
+          </a>
+        </div>
+      </section>
+
+      <section id="products" className="py-10">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-8">{t('products')}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {state.products.map((product) => (
+              <div key={product.id} className="bg-white p-4 rounded-lg shadow-md holographic" role="article">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-40 object-cover rounded-md mb-4"
+                  loading="lazy"
+                />
+                <h3 className="text-xl font-semibold">{product.name}</h3>
+                <p className="text-gray-600">
+                  ${getPrice(product)} (Save ${(product.originalPrice - getPrice(product)).toFixed(2)})
+                </p>
+                <p className="text-sm text-gray-500">{product.description}</p>
+                {product.stock < 10 && <p className="text-red-500">{t('lowStock', { count: product.stock })}</p>}
+                <p className="text-sm text-gray-500">{t('carbonFootprint')}: {product.carbonFootprint}</p>
+                <div className="mt-4 flex space-x-2">
+                  <button
+                    onClick={() => dispatch({ type: 'ADD_TO_CART', payload: product })}
+                    className="baby-button"
+                    aria-label={t('addToCart', { name: product.name })}
+                  >
+                    {t('addToCartButton')}
+                  </button>
+                  <a
+                    href={product.affiliateLink}
+                    className="baby-button bg-gray-500"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={t('viewOnAmazon', { name: product.name })}
+                  >
+                    {t('viewOnAmazonButton')}
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Suspense fallback={<div className="text-center py-10">{t('loading')}</div>}>
+        <section id="quiz" className="py-10 bg-gray-50">
+          <div className="container mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-8">{t('dailyQuiz')}</h2>
+            <DailyQuiz />
+          </div>
+        </section>
+
+        <section id="forum" className="py-10">
+          <div className="container mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-8">{t('communityForum')}</h2>
+            <Forum />
+          </div>
+        </section>
+
+        <section id="analytics" className="py-10 bg-gray-50">
+          <div className="container mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-8">{t('analytics')}</h2>
+            <AnalyticsChart />
+          </div>
+        </section>
+      </Suspense>
+    </div>
+  );
+};
+
+export default Dashboard;
