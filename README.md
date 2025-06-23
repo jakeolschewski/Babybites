@@ -1,4 +1,4 @@
-# BabyBites - AI-Powered Baby Products Website
+# BabyBites - AI-Powered Baby Products Website  
 
 Welcome to BabyBites, an AI-powered e-commerce website for baby products and parenting tools! This project is built to help new parents discover products, get personalized recommendations, and connect with a community.
 
