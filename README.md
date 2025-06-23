@@ -5,7 +5,7 @@ Welcome to BabyBites, an AI-powered e-commerce website for baby products and par
 ## What is BabyBites?
 - **E-commerce**: Shop for baby products like Organic Baby Puree, Baby Sleep Sack, and Teething Toys with affiliate links to Amazon.
 - **AI Features**: A chatbot for help, federated learning for personalized suggestions, and mock generative AI for product descriptions.
-- **Parenting Tools**: Daily quiz, community forum, and analytics to track savings.
+- **Parenting Tools**: Daily quiz, community forum, and analytics to track savings. 
 - **PWA**: Works offline with a service worker and manifest.
 - **Design**: Holographic and interactive styles with theme/language options.
 
