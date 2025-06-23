@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect, lazy, Suspense } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { initializeApp } from 'firebase/app/dist/index.esm.js';
+import { getAuth, onAuthStateChanged } from 'firebase/auth/dist/index.esm.js';
 import { AppContext, reducer, initialState } from './context/AppContext';
 import Header from './components/Header';
 import { ToastContainer, toast } from 'react-toastify';
